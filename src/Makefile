@@ -1,27 +1,31 @@
-# define the name of your source file(s)
-SRCS =
-
-# define the name of the object files(s) - we can do this automatically
-OBJS = final.c
-
-# tell MAKE which compiler to use
+# Start of makefile
+# Define dependencies
+IDIR = ../include
+ODIR = obj;
+# Define source files
+SRCS = compressor.c interface.c main.c overdrive.c
+# Define object files
+# Define compiler
 CCOMP = gcc
-
-# flags for the compiler
-CFLAGS =
-
-# the name of your executable file (the target) - here we put it in the top directory
-TARGET = final
-
-# flags for the linker - note -lm for the math library
+# Define compiler flags
+CFLAGS = -Wall -O3 -I$(INCLUDE)
+# Define target (will create usr/bin folder)
+TARGET = ../usr/bin/raspberry_ripple
+# Define linker flags
 LDFLAGS = -lm -ljack
+# Actions
+_INCLUDE = compressor.h interface.h overdrive.h
+INCLUDE = $(patsubst %,$(IDIR)/%,$(_INCLUDE))
 
-# actions
+_OBJ = compressor.o interface.o main.o overdrive.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
 all: $(OBJS)
-	$(CCOMP) $(OBJS) -o $(TARGET)  $(LDFLAGS)
+	$(CCOMP) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-
-
-# delete all objects and target
+$(OBJS)/%.o: %.c $(INCLUDE)
+	$(CCOMP) -c -o $@ $< $(CFLAGS)
+# Delete all objects and target
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(ODIR)/*.o $(TARGET)
+# End of makefile
