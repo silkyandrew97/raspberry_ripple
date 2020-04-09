@@ -5,7 +5,7 @@ ODIR = ../src/obj;
 # Define compiler
 CCOMP = gcc
 # Define compiler flags
-CFLAGS = -Wall -O3 -I$(IDIR) -I.
+CFLAGS = -Wall -O3 -I$(IDIR) -I. -g
 # Define linker flags
 LDFLAGS = -lm -ljack
 # Define targets (will create usr/bin folder)
