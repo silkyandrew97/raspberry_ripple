@@ -25,4 +25,3 @@ $(ODIR)/%.o: %.c $(INCLUDE)
 clean:
     rm -f $(ODIR)/*.o $(TARGET)
 # End of makefile
-test
