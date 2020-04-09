@@ -19,13 +19,13 @@ _OBJS = compressor.o interface.o overdrive.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 # Make all
 all: $(OBJS)
-    $(CCOMP) $(OBJS) test_compressor.o -o $(TARGET_COMPRESSOR) $(LDFLAGS)
-    $(CCOMP) $(OBJS) test_overdrive.o -o $(TARGET_OVERDRIVE) $(LDFLAGS)
-    $(CCOMP) $(OBJS) test_together.o -o $(TARGET_TOGETHER) $(LDFLAGS)
+	$(CCOMP) $(OBJS) test_compressor.o -o $(TARGET_COMPRESSOR) $(LDFLAGS)
+	$(CCOMP) $(OBJS) test_overdrive.o -o $(TARGET_OVERDRIVE) $(LDFLAGS)
+	$(CCOMP) $(OBJS) test_together.o -o $(TARGET_TOGETHER) $(LDFLAGS)
 # Build objects
 $(ODIR)/%.o: %.c $(INCLUDE) test.h
-    $(CCOMP) -c -o $@ $< $(CFLAGS)
+	$(CCOMP) -c -o $@ $< $(CFLAGS)
 # Make clean (delete all objects and target)
 clean:
-    rm -f $(ODIR)/*.o $(TARGET_COMPRESSOR) $(TARGET_OVERDRIVE) $(TARGET_TOGETHER)
+	rm -f $(ODIR)/*.o $(TARGET_COMPRESSOR) $(TARGET_OVERDRIVE) $(TARGET_TOGETHER)
 # End of makefile

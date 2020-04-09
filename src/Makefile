@@ -17,11 +17,11 @@ _OBJS = compressor.o interface.o main.o overdrive.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 # Make all
 all: $(OBJS)
-    $(CCOMP) $(OBJS) -o $(TARGET) $(LDFLAGS)
+	$(CCOMP) $(OBJS) -o $(TARGET) $(LDFLAGS)
 # Build objects
 $(ODIR)/%.o: %.c $(INCLUDE)
-    $(CCOMP) -c -o $@ $< $(CFLAGS)
+	$(CCOMP) -c -o $@ $< $(CFLAGS)
 # Make clean (delete all objects and target)
 clean:
-    rm -f $(ODIR)/*.o $(TARGET)
+	rm -f $(ODIR)/*.o $(TARGET)
 # End of makefile
