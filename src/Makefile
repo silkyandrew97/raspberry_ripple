@@ -1,31 +1,27 @@
 # Start of makefile
-# Define dependencies
+# Define directories (Create subdirectory for object files)
 IDIR = ../include
-ODIR = obj;
-# Define source files
-SRCS = compressor.c interface.c main.c overdrive.c
-# Define object files
+ODIR = ../src/obj;
 # Define compiler
 CCOMP = gcc
 # Define compiler flags
-CFLAGS = -Wall -O3 -I$(INCLUDE)
-# Define target (will create usr/bin folder)
-TARGET = ../usr/bin/raspberry_ripple
+CFLAGS = -Wall -O3 -I$(IDIR)
 # Define linker flags
 LDFLAGS = -lm -ljack
-# Actions
+# Define targets (will create usr/bin folder)
+TARGET = ../usr/bin/raspberry_ripple
+# Define paths to directories
 _INCLUDE = compressor.h interface.h overdrive.h
 INCLUDE = $(patsubst %,$(IDIR)/%,$(_INCLUDE))
-
-_OBJ = compressor.o interface.o main.o overdrive.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
-
+_OBJS = compressor.o interface.o main.o overdrive.o
+OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
+# Make all
 all: $(OBJS)
 	$(CCOMP) $(OBJS) -o $(TARGET) $(LDFLAGS)
-
-$(OBJS)/%.o: %.c $(INCLUDE)
+# Build objects
+$(ODIR)/%.o: %.c $(INCLUDE)
 	$(CCOMP) -c -o $@ $< $(CFLAGS)
-# Delete all objects and target
+# Make clean (delete all objects and target)
 clean:
 	rm -f $(ODIR)/*.o $(TARGET)
 # End of makefile
