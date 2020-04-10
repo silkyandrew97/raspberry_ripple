@@ -3,7 +3,6 @@
 //Project Home: https://github.com/silkyandrew97/raspberry_ripple
 
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #include "interface.h"
 

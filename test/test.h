@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <jack/jack.h>
 
 //Compressor Parameters
 typedef struct{
