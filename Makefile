@@ -1,7 +1,7 @@
 # Start of makefile
 # Define directories (Create subdirectories for object files)
 SRC = src
-TEST = test
+SRC_TEST = test
 IDIR := include
 IDIR_TEST := test
 ODIR := src/obj
@@ -36,7 +36,7 @@ all: $(OBJS) $(OBJS_TEST)
 # Build objects
 $(ODIR)/%.o: $(SRC)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
-$(ODIR_TEST)/%.o: $(TEST)/%.c $(DEPS_TEST)
+$(ODIR_TEST)/%.o: $(SRC_TEST)/%.c $(DEPS_TEST)
 	$(CC) -c -o $@ $< $(CFLAGS_TEST)
 # Make clean (delete all objects and target)
 clean:
