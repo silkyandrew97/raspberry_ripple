@@ -27,6 +27,7 @@
 		494CC3F3243F4A92001D96C6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		494CC3F4243F4A92001D96C6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		494CC3F5243F4A92001D96C6 /* test */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test; sourceTree = "<group>"; };
+		494CC3FE2440D276001D96C6 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +44,7 @@
 		494CC3CE243F4894001D96C6 = {
 			isa = PBXGroup;
 			children = (
+				494CC3FE2440D276001D96C6 /* Makefile */,
 				494CC3F2243F4A92001D96C6 /* .gitignore */,
 				494CC3F0243F4A91001D96C6 /* include */,
 				494CC3F3243F4A92001D96C6 /* LICENSE */,
