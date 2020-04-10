@@ -10,9 +10,9 @@
 #include <signal.h>
 #include <jack/jack.h>
 #include <math.h>
-#include "../Final/compressor.h"
-#include "../Final/overdrive.h"
-#include "../Final/interface.h"
+#include "compressor.h"
+#include "overdrive.h"
+#include "interface.h"
 #include "test.h"
 
 jack_port_t *input_port;
