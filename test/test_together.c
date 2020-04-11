@@ -327,6 +327,10 @@ static inline int get_args(int argc, char *argv[]){
     return 0;
 }
 
+static inline float db2lin(float db){
+    return powf(10.0f, 0.05f * db);
+}
+
 static inline void effects_chain(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out, compressor_parameters *comp, overdrive_parameters *drive, interface_parameters *inter){
     if (comp->chain == 1){
         if (compressor(in, out, comp, inter)){
@@ -381,6 +385,16 @@ int process (jack_nframes_t nframes, void *arg){
     //Global Params
     comp->compression_db = 6.0f;
     drive->drive = 0.5f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     
     //out_1 Timer Start
     begin = clock();
@@ -433,6 +447,16 @@ int process (jack_nframes_t nframes, void *arg){
     //Double Global Params
     comp->compression_db = 12.0f;
     drive->drive = 1.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     
     //out_5 Timer Start
     begin = clock();

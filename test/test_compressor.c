@@ -331,6 +331,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 0.0
     comp->compression_db = 0.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_1, comp, drive, inter);
     //out_1 Timer End
@@ -342,6 +344,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 3.0
     comp->compression_db = 3.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_2, comp, drive, inter);
     //out_2 Timer End
@@ -353,6 +357,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 6.0
     comp->compression_db = 6.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_3, comp, drive, inter);
     //out_3 Timer End
@@ -364,6 +370,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 9.0
     comp->compression_db = 9.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_4, comp, drive, inter);
     //out_4 Timer End
@@ -375,6 +383,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 12.0
     comp->compression_db = 12.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_5, comp, drive, inter);
     //out_5 Timer End
@@ -386,6 +396,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 15.0
     comp->compression_db = 15.0f;
+    //Adjust Dependants
+    comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
     effects_chain(in, out_6, comp, drive, inter);
     //out_6 Timer End

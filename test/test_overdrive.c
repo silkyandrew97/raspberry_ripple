@@ -262,6 +262,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.0
     drive->drive = 0.0f;
+    //Adjust Dependants
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_1, comp, drive, inter);
     //out_1 Timer End
@@ -273,6 +282,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.2
     drive->drive = 0.2f;
+    //Adjust Coefficients
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_2, comp, drive, inter);
     //out_2 Timer End
@@ -284,6 +302,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.4
     drive->drive = 0.4f;
+    //Adjust Coefficients
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_3, comp, drive, inter);
     //out_3 Timer End
@@ -295,6 +322,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
    //Params - Overdrive = 0.6
     drive->drive = 0.6f;
+    //Adjust Coefficients
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_4, comp, drive, inter);
     //out_4 Timer End
@@ -306,6 +342,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.8
     drive->drive = 0.8f;
+    //Adjust Coefficients
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_5, comp, drive, inter);
     //out_5 Timer End
@@ -317,6 +362,15 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 1.0
     drive->drive = 1.0f;
+    //Adjust Coefficients
+    drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
+    drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
+    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+        drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
+    }
+    else{
+        drive->norm_factor = drive->drive_coeff;
+    }
     //Effect
     effects_chain(in, out_6, comp, drive, inter);
     //out_6 Timer End
