@@ -24,10 +24,12 @@ _DEPS_TEST := test.h
 DEPS_TEST := $(patsubst %,$(IDIR_TEST)/%,$(_DEPS_TEST))
 _OBJS := compressor.o interface.o overdrive.o
 OBJS := $(patsubst %,$(ODIR)/%,$(_OBJS))
+_OBJS_MAIN := main.o
+OBJS_MAIN := $(patsubst %,$(ODIR)/%,$(_OBJS_MAIN))
 _OBJS_TEST := test_compressor.o test_overdrive.o test_together.o
 OBJS_TEST := $(patsubst %,$(ODIR_TEST)/%,$(_OBJS_TEST))
 # Make all
-all: $(OBJS) $(OBJS_TEST)
+all: $(OBJS) $(OBJS_MAIN) $(OBJS_TEST)
 	$(CC) $(OBJS) $(ODIR)/main.o -o $(TDIR)/raspberry_ripple $(CFLAGS) $(LIBS)
 	$(CC) $(OBJS) $(ODIR_TEST)/test_compressor.o -o $(TDIR)/test_compressor $(CFLAGS_TEST) $(LIBS)
 	$(CC) $(OBJS) $(ODIR_TEST)/test_overdrive.o -o $(TDIR)/test_overdrive $(CFLAGS_TEST) $(LIBS)
