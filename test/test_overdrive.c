@@ -15,6 +15,8 @@
 #include "interface.h"
 #include "test.h"
 
+#define THRESHOLD 0.3333333f
+
 jack_port_t *input_port;
 jack_port_t *output_port_1;
 jack_port_t *output_port_2;
