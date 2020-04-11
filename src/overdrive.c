@@ -49,12 +49,16 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
     else if (drive->peak_count == drive->peak_window){
         drive->peak = local_peak;
         uint32_t high = drive->buffer_count;
-        uint32_t j;
-        for (i = 0; i < drive->peak_window; i++){
-            j = (drive->buffer_count + i + 1) % drive->peak_window;
-            if (drive->window_store[j] >= drive->peak){
-                drive->peak = drive->window_store[j];
-                high = j;
+        for (i = drive->buffer_count + 1; i < drive->peak_window; i++){
+            if (drive->window_store[i] >= drive->peak){
+                drive->peak = drive->window_store[i];
+                high = i;
+            }
+        }
+        for (i = 0; i < drive->buffer_count; i++){
+            if (drive->window_store[i] >= drive->peak){
+                drive->peak = drive->window_store[i];
+                high = i;
             }
         }
         drive->peak_count = drive->buffer_count - high + 1;
