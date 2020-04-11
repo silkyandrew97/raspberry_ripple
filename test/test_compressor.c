@@ -274,6 +274,10 @@ static inline int get_args(int argc, char *argv[]){
     return 0;
 }
 
+static inline float db2lin(float db){
+    return powf(10.0f, 0.05f * db);
+}
+
 static inline void effects_chain(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out, compressor_parameters *comp, overdrive_parameters *drive, interface_parameters *inter){
     if (comp->chain == 1){
         if (compressor(in, out, comp, inter)){
