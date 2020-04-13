@@ -391,7 +391,7 @@ int process (jack_nframes_t nframes, void *arg){
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
-    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+    if (drive->inv_drive_coeff < 2.0f * THRESHOLD){
         drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
     }
     else{
@@ -453,7 +453,7 @@ int process (jack_nframes_t nframes, void *arg){
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
-    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+    if (drive->inv_drive_coeff < 2.0f * THRESHOLD){
         drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
     }
     else{

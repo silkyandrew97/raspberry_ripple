@@ -375,7 +375,7 @@ int process (jack_nframes_t nframes, void *arg){
             exit(1);
         }
         if (drive->chain == 2){
-            overdrive(in, out, drive, inter);
+            overdrive(out, out, drive, inter);
         }
     }
     else if (drive->chain == 1){
@@ -481,6 +481,25 @@ int main (int argc, char *argv[]){
         fprintf(stderr, "[JACK-ERROR] Cannot register JACK ports\n");
         exit (1);
     }
+    //Run Raspberry Ripple
+    printf("\n"
+    "/-----RASPBERRY RIPPLE-----/\n");
+    //Display Raspberry Ripple Info
+    print_about();
+    
+    //Parameter Warnings
+    if (inter->nperiods != 3){
+        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface\n");
+    }
+    if (!(inter->fs == 48000) || inter->fs == 44100){
+        printf("[USER-WARNING] Check sampling rate is compatible with USB Audio Interface\n");
+    }
+    float latency = inter->nframes * inter->nperiods / inter->fs;
+    if (latency > 0.006f){
+        printf("[USER-WARNING] Latency (%f) is more than 'just noticeable difference' (6ms)\n", latency);
+    }
+    printf("\n"
+           "Raspberry Ripple Started... Press CTRL-C to exit\n");
     //Activate Client - Process will now start running
     if (jack_activate (client)){
         fprintf (stderr, "[JACK-ERROR] Cannot activate client");
@@ -505,28 +524,7 @@ int main (int argc, char *argv[]){
         fprintf (stderr, "[JACK-WARNING] Cannot connect output port - it has to be done manually\n");
     }
     free (ports);
-    
-    //Run Raspberry Ripple
-    printf("\n"
-    "/-----RASPBERRY RIPPLE-----/\n");
-    //Display Raspberry Ripple Info
-    print_about();
-    
-    //Parameter Warnings
-    if (inter->nperiods != 3){
-        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface\n");
-    }
-    if (!(inter->fs == 48000) || inter->fs == 44100){
-        printf("[USER-WARNING] Check sampling rate is compatible with USB Audio Interface\n");
-    }
-    float latency = inter->nframes * inter->nperiods / inter->fs;
-    if (latency > 0.006f){
-        printf("[USER-WARNING] Latency (%f) is more than 'just noticeable difference' (6ms)\n", latency);
-    }
-    
     //Run until stopped by user
-    printf("\n"
-           "Raspberry Ripple Started... Press CTRL-C to exit\n");
     sleep (-1);
     exit (0);
 }

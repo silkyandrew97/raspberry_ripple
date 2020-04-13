@@ -61,7 +61,7 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
                 high = i;
             }
         }
-        drive->peak_count = drive->buffer_count - high + 1;
+        drive->peak_count = drive->buffer_count - high;
         if (high > drive->buffer_count){
             drive->peak_count += drive->peak_window;
         }
@@ -149,7 +149,6 @@ int overdrive_init(overdrive_parameters *drive, interface_parameters *inter){
     else{
         drive->norm_factor = drive->drive_coeff;
     }
-    
     /*...Sliding Window Calculations...*/
     //Calculate sliding window size rounded up to nearest block multiple
     uint32_t window_n = (uint32_t)(floorf(drive->window_t * (float)inter->fs));
@@ -173,18 +172,6 @@ int overdrive_init(overdrive_parameters *drive, interface_parameters *inter){
     for (i = 0; i < drive->peak_window; i++) {
         drive->window_store[i] = 0.0f;
     }
-    /*
-    //Allocate memory needed to store one period's values
-    drive->local_store = (uint32_t*)malloc(inter->nframes * sizeof(uint32_t));
-    if (drive->local_store == NULL){
-        fprintf(stderr, "[ERROR] in drive->local_store memory allocation\n");
-        return 1;
-    }
-    //Initialise
-    for (i = 0; i < inter->nframes; i++) {
-        drive->local_store[i] = 0.0f;
-    }
-    */
     return 0;
 }
 
@@ -192,16 +179,13 @@ int overdrive(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out,
     float prev_peak = drive->peak;
     float local_store[inter->nframes];
     float *ls = local_store;
-    
     /*...Peak Calculations...*/
     peak_calcs(in, drive, inter, prev_peak, ls);
-    
     /*...Effect and Gain...*/
     if (effect(in, out, drive, inter, prev_peak, ls)){
         fprintf(stderr,"[ERROR] in overdrive effect\n");
         exit(1);
     }
-    
     //Peak Count
     drive->peak_count++;
     //Buffer Count
