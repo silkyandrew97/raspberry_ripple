@@ -11,7 +11,6 @@
 #include <jack/jack.h>
 #include "interface.h"
 
-//Compressor Parameters
 typedef struct{
     //User Parameters
     float ratio;            //Compression Ratio - Must be more than 20

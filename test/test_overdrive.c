@@ -57,7 +57,7 @@ static inline void print_help(){
            "                        Default is 3 - Recommended for USB Audio Interface\n"
            "    [--nframes u]       Frames per Period - Must be at least 1\n"
            "                        Default is 64 - Soundcards vary in compatibility\n"
-           "    [--fs u]            Sampling Rate (Hz) - Must be at least 44100\n"
+           "    [--fs u]            Sample Rate (Hz) - Must be at least 44100\n"
            "                        Default is 48000 - Soundcards vary in compatibility\n"
            "\n"
            "  Overdrive Parameters:\n"
@@ -515,6 +515,30 @@ int main (int argc, char *argv[]){
         fprintf(stderr, "no more JACK ports available\n");
         exit (1);
     }
+    //Run Raspberry Ripple
+    printf("\n"
+    "/-----RASPBERRY RIPPLE-----/\n");
+    //Display Raspberry Ripple Info
+    print_about();
+    
+    //Parameter Warnings
+    if (inter->nframes < 64){
+        printf("[USER-WARNING] Check current block length (%u frames) is compatible with USB Audio Interface\n", inter->nframes);
+    }
+    if (inter->nperiods != 3){
+        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface (currently set at %u)\n", inter->nperiods);
+    }
+    if (!((inter->fs == 48000) || (inter->fs == 44100))){
+        printf("[USER-WARNING] Check current sampling rate (%uHz) is compatible with USB Audio Interface\n", inter->fs);
+    }
+    float latency = 1000.0f * (float)inter->nframes * (float)inter->nperiods / (float)inter->fs;
+    if (latency > 6.0f){
+        printf("[USER-WARNING] Latency (%.2fms) is more than 'just noticeable difference' (6ms)\n"
+               "               - Possible audible lag in real-time\n", latency);
+    }
+    printf("\n"
+           "Raspberry Ripple Started... Press CTRL-C to exit\n");
+    
     //Activate Client - Process will now start running
     if (jack_activate (client)){
         fprintf (stderr, "[JACK-ERROR] Cannot activate client");
@@ -539,32 +563,7 @@ int main (int argc, char *argv[]){
         fprintf (stderr, "[JACK-WARNING] Cannot connect output port - it has to be done manually\n");
     }
     free (ports);
-    
-    //Run Raspberry Ripple
-    printf("\n"
-    "/-----RASPBERRY RIPPLE-----/\n");
-    //Display Raspberry Ripple Info
-    print_about();
-    
-    //Parameter Warnings
-    if (inter->nframes < 64){
-        printf("[USER-WARNING] Check current block length (%u frames) is compatible with USB Audio Interface\n", inter->nframes);
-    }
-    if (inter->nperiods != 3){
-        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface (currently set at %u)\n", inter->nperiods);
-    }
-    if (!((inter->fs == 48000) || (inter->fs == 44100))){
-        printf("[USER-WARNING] Check current sampling rate (%uHz) is compatible with USB Audio Interface\n", inter->fs);
-    }
-    float latency = 1000.0f * (float)inter->nframes * (float)inter->nperiods / (float)inter->fs;
-    if (latency > 6.0f){
-        printf("[USER-WARNING] Latency (%.2fms) is more than 'just noticeable difference' (6ms)\n"
-               "               - Possible audible lag in real-time\n", latency);
-    }
-    
     //Run until stopped by user
-    printf("\n"
-           "Raspberry Ripple Started... Press CTRL-C to exit\n");
     sleep (-1);
     exit (0);
 }

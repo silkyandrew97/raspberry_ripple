@@ -52,7 +52,7 @@ static inline void print_help(){
            "                        Default is 3 - Recommended for USB Audio Interface\n"
            "    [--nframes d]       Frames per Period - Must be at least 1\n"
            "                        Default is 64 - Soundcards vary in compatibility\n"
-           "    [--fs d]            Sampling Rate (Hz) - Must be at least 44100\n"
+           "    [--fs d]            Sample Rate (Hz) - Must be at least 44100\n"
            "                        Default is 48000 - Soundcards vary in compatibility\n"
            "\n"
            "  Compressor Parameters:\n"
@@ -449,8 +449,7 @@ int main (int argc, char *argv[]){
         exit(1);
     }
     
-    
-    /*...JACK Initialisation...*/
+    //JACK Initialisation
     const char **ports;
     const char *client_name = "raspberry_ripple";
     const char *server_name = NULL;
@@ -494,18 +493,23 @@ int main (int argc, char *argv[]){
     print_about();
     
     //Parameter Warnings
+    if (inter->nframes < 64){
+        printf("[USER-WARNING] Check current block length (%u frames) is compatible with USB Audio Interface\n", inter->nframes);
+    }
     if (inter->nperiods != 3){
-        printf("[USER-WARNING] 3 period buffer recommended for USB Audio Interface\n");
+        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface (currently set at %u)\n", inter->nperiods);
     }
-    if (!(inter->fs == 48000) || inter->fs == 44100){
-        printf("[USER-WARNING] Check sample rate is compatible with USB Audio Interface\n");
+    if (!((inter->fs == 48000) || (inter->fs == 44100))){
+        printf("[USER-WARNING] Check current sampling rate (%uHz) is compatible with USB Audio Interface\n", inter->fs);
     }
-    float latency = inter->nframes * inter->nperiods / inter->fs;
-    if (latency > 0.006f){
-        printf("[USER-WARNING] Latency (%f) is more than 'just noticeable difference' (6ms)\n", latency);
+    float latency = 1000.0f * (float)inter->nframes * (float)inter->nperiods / (float)inter->fs;
+    if (latency > 6.0f){
+        printf("[USER-WARNING] Latency (%.2fms) is more than 'just noticeable difference' (6ms)\n"
+               "               - Possible audible lag in real-time\n", latency);
     }
     printf("\n"
            "Raspberry Ripple Started... Press CTRL-C to exit\n");
+    
     //Activate Client - Process will now start running
     if (jack_activate (client)){
         fprintf (stderr, "[JACK-ERROR] Cannot activate client");

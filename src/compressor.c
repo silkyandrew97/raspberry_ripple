@@ -15,6 +15,7 @@ static inline float lin2db(float lin){
 }
 
 void compressor_default(compressor_parameters *comp){
+    //Set Default Parameters
     comp->ratio = 50.0f;
     comp->knee_width = 10.0f;
     comp->threshold = -60.0f;
@@ -48,7 +49,7 @@ void compressor_init(compressor_parameters *comp, interface_parameters *inter){
 int compressor(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out, compressor_parameters *comp, interface_parameters *inter){
     float abs, db, sc, gc, lin;
     for (uint32_t i = 0; i < inter->nframes; i++){
-        //Apply Anomaly  Detection
+        //Anomaly Detection
         abs = fabsf(in[i]);
         if ((abs == 0.0f) || (isnan(abs)) || (isinf(abs))){
             out[i] = 0.0f;

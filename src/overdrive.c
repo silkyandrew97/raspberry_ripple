@@ -27,8 +27,11 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
     drive->window_store[drive->buffer_count] = local_peak;
     //If current block peak is larger than what is stored in the window
     if (local_peak > drive->peak){
+        //Assign new peak value
         drive->peak = local_peak;
+        //Reset peak counter
         drive->peak_count = 0;
+        //Peak Smoothing
         float prev_sample;
         for (i = 0; i < inter->nframes; i++){
             abs = fabsf(in[i]);
@@ -46,9 +49,11 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
             }
         }
     }
+    //If largest peak lost from window
     else if (drive->peak_count == drive->peak_window){
         drive->peak = local_peak;
         uint32_t high = drive->buffer_count;
+        //Calucate new window peak
         for (i = drive->buffer_count + 1; i < drive->peak_window; i++){
             if (drive->window_store[i] >= drive->peak){
                 drive->peak = drive->window_store[i];
@@ -61,10 +66,12 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
                 high = i;
             }
         }
+        //Reassign peak counter
         drive->peak_count = drive->buffer_count - high;
         if (high > drive->buffer_count){
             drive->peak_count += drive->peak_window;
         }
+        //Peak Smoothing
         if (drive->peak < prev_peak){
             float linspace = (prev_peak - drive->peak) / inter->nframes;
             for (i = 0; i < inter->nframes; i++){
@@ -78,15 +85,17 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
     float norm, abs;
     uint32_t i;
     for (i = 0; i<inter->nframes; i++){
+        //Apply Drive Coefficient
         if (drive->peak == prev_peak){
             local_store[i] = drive->peak * drive->drive_coeff;
         }
         else{
             local_store[i] *= drive->drive_coeff;
         }
+        //Normalise
         norm = in[i] / local_store[i];
         abs = fabsf(norm);
-        //Apply Anomaly Detection
+        //Anomaly Detection
         if ((abs == 0.0f) || (isnan(abs)) || (isinf(abs))){
             out[i] = 0.0f;
         }
@@ -117,6 +126,7 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
                 fprintf(stderr, "[ERROR] in Overdrive Static Characteristic\n");
                 return 1;
             }
+            //Drive Coefficent Normalisation
             out[i] /= drive->norm_factor;
             //Apply Gain
             out[i] *= drive->gain;
@@ -126,6 +136,7 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
 }
 
 void overdrive_default(overdrive_parameters *drive){
+    //Set Default Parameters
     drive->drive = 0.5f;
     drive->window_t = 0.5f;
     drive->gain_db = 0.0f;
@@ -176,9 +187,9 @@ int overdrive(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out,
     float prev_peak = drive->peak;
     float local_store[inter->nframes];
     float *ls = local_store;
-    /*...Peak Calculations...*/
+    //Peak Calculations
     peak_calcs(in, drive, inter, prev_peak, ls);
-    /*...Effect and Gain...*/
+    //Effect and Gain
     if (effect(in, out, drive, inter, prev_peak, ls)){
         fprintf(stderr,"[ERROR] in overdrive effect\n");
         exit(1);

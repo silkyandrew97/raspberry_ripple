@@ -7,6 +7,7 @@
 #include "interface.h"
 
 int interface_default(interface_parameters *inter){
+    //Set Default Parameters
     inter->soundcard = (char*)malloc((inter->sclen + 1) * sizeof(char));
     if (inter->soundcard == NULL){
         fprintf(stderr, "[ERROR] in inter->soundcard memory allocation\n");

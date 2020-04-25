@@ -14,7 +14,7 @@ typedef struct{
     char *soundcard;    //Device name
     uint32_t nperiods;  //Periods per Buffer - Must be at least 1
     uint32_t nframes;   //Frames per Period - Must be of the form 2^n
-    uint32_t fs;        //Sampling Rate (Hz) - Usually 44100 or 48000, depending on soundcard
+    uint32_t fs;        //Sample Rate (Hz) - Usually 44100 or 48000, depending on soundcard
     //Algorithmic Parameters
     uint32_t sclen, plen, flen, fslen;
 } interface_parameters;
