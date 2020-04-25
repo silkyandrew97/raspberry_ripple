@@ -88,9 +88,7 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
         abs = fabsf(norm);
         //Apply Anomaly Detection
         if ((abs == 0.0f) || (isnan(abs)) || (isinf(abs))){
-            //printf("in[%u] is %f\n", i, in[i]);
             out[i] = 0.0f;
-            //printf("out[%u] is %f\n", i, out[i]);
         }
         //If No Anomalies Detected
         else{
@@ -100,10 +98,10 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
             }
             else if ((abs > THRESHOLD) && (abs <= (2.0f * THRESHOLD))){
                 if (norm > 0.0f){
-                    out[i] = local_store[i] * (3.0f - powf((2.0f - norm * 3.0f) , 2.0f)) / 3.0f;
+                    out[i] = local_store[i] * (3.0f - powf((2.0f - norm * 3.0f), 2.0f)) / 3.0f;
                 }
                 if (norm < 0.0f){
-                    out[i] = local_store[i] * (-(3.0f - powf((2.0f - (abs * 3.0f)) , 2.0f)) / 3.0f);
+                    out[i] = local_store[i] * (-(3.0f - powf((2.0f - (abs * 3.0f)), 2.0f)) / 3.0f);
                 }
             }
             else if (abs > 2.0f * THRESHOLD){
@@ -116,7 +114,6 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
             }
             else{
                 out[i] = in[i];
-                //printf("abs is %f\n", abs);
                 fprintf(stderr, "[ERROR] in Overdrive Static Characteristic\n");
                 return 1;
             }
@@ -186,17 +183,5 @@ int overdrive(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out,
         fprintf(stderr,"[ERROR] in overdrive effect\n");
         exit(1);
     }
-    //Peak Count
-    drive->peak_count++;
-    //Buffer Count
-    drive->buffer_count++;
-    //Once window is filled, start overwriting
-    if (drive->buffer_count == drive->peak_window){
-        drive->buffer_count = 0;
-    }
     return 0;
-}
-
-void overdrive_free(overdrive_parameters *drive){
-    free(drive->window_store);
 }

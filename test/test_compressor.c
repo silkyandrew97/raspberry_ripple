@@ -37,7 +37,7 @@ static inline void print_about(){
            "Raspberry Ripple - A Programmable Bass Guitar Effects Pedal\n"
            "(c) Copyright 2020, Andy Silk (@silkyandrew97)\n"
            "MIT License\n"
-           "Project Home: https://github.com/...\n"
+           "Project Home: https://github.com/silkyandrew97/raspberry_ripple\n"
            "\n");
 }
 
@@ -79,8 +79,6 @@ static inline void print_help(){
 
 static inline void INThandler(int sig){
     signal(sig, SIG_IGN);
-    //Clean
-    overdrive_free(drive);
     //Close Client
     printf("\n");
     jack_client_close (client);
@@ -285,7 +283,7 @@ static inline void effects_chain(jack_default_audio_sample_t *in, jack_default_a
             exit(1);
         }
         if (drive->chain == 2){
-            overdrive(in, out, drive, inter);
+            overdrive(out, out, drive, inter);
         }
     }
     else if (drive->chain == 1){
@@ -327,6 +325,9 @@ int process (jack_nframes_t nframes, void *arg){
     out_5 = jack_port_get_buffer (output_port_5, nframes);
     out_6 = jack_port_get_buffer (output_port_6, nframes);
     
+    //Control Params
+    float gs[2] = {comp->gs[0], comp->gs[1]};
+    
     //Global Params
     comp->chain = 1;
     drive->chain = 0;
@@ -335,6 +336,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 0.0
     comp->compression_db = 0.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -348,6 +351,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 3.0
     comp->compression_db = 3.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -361,6 +366,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 6.0
     comp->compression_db = 6.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -374,6 +381,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 9.0
     comp->compression_db = 9.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -387,6 +396,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 12.0
     comp->compression_db = 12.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -400,6 +411,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Compression = 15.0
     comp->compression_db = 15.0f;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
     //Adjust Dependants
     comp->comps = db2lin(comp->compression_db) - 1.0f;
     //Effect
@@ -489,7 +502,7 @@ int main (int argc, char *argv[]){
     jack_set_process_callback (client, process, 0);
     //Call shutdown callback when disconnected
     jack_on_shutdown (client, jack_shutdown, 0);
-    //Create 1 input and 8 output ports
+    //Create 1 input and 6 output ports
     input_port = jack_port_register (client, "input",
                      JACK_DEFAULT_AUDIO_TYPE,
                      JackPortIsInput, 0);

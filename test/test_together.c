@@ -41,7 +41,7 @@ static inline void print_about(){
            "Raspberry Ripple - A Programmable Bass Guitar Effects Pedal\n"
            "(c) Copyright 2020, Andy Silk (@silkyandrew97)\n"
            "MIT License\n"
-           "Project Home: https://github.com/...\n"
+           "Project Home: https://github.com/silkyandrew97/raspberry_ripple\n"
            "\n");
 }
 
@@ -90,8 +90,6 @@ static inline void print_help(){
 
 static inline void INThandler(int sig){
     signal(sig, SIG_IGN);
-    //Clean
-    overdrive_free(drive);
     //Close Client
     printf("\n");
     jack_client_close (client);
@@ -340,7 +338,7 @@ static inline void effects_chain(jack_default_audio_sample_t *in, jack_default_a
             exit(1);
         }
         if (drive->chain == 2){
-            overdrive(in, out, drive, inter);
+            overdrive(out, out, drive, inter);
         }
     }
     else if (drive->chain == 1){
@@ -384,6 +382,11 @@ int process (jack_nframes_t nframes, void *arg){
     out_7 = jack_port_get_buffer (output_port_7, nframes);
     out_8 = jack_port_get_buffer (output_port_8, nframes);
     
+    //Control Params
+    float gs[2] = {comp->gs[0], comp->gs[1]};
+    float peak = drive->peak;
+    float peak_count = drive->peak_count;
+    
     //Global Params
     comp->compression_db = 6.0f;
     drive->drive = 0.5f;
@@ -403,6 +406,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - Just compressor at default params
     comp->chain = 1;
     drive->chain = 0;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_1, comp, drive, inter);
     //out_1 Timer End
@@ -415,6 +422,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - Just overdrive at default params
     comp->chain = 0;
     drive->chain = 1;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_2, comp, drive, inter);
     //out_2 Timer End
@@ -427,6 +438,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - compressor->overdrive at default params
     comp->chain = 1;
     drive->chain = 2;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_3, comp, drive, inter);
     //out_3 Timer End
@@ -439,6 +454,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - overdrive->compressor at default params
     comp->chain = 2;
     drive->chain = 1;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_4, comp, drive, inter);
     //out_4 Timer End
@@ -465,6 +484,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - Just compressor at double compression
     comp->chain = 1;
     drive->chain = 0;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_5, comp, drive, inter);
     //out_5 Timer End
@@ -477,6 +500,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - Just overdrive at double drive
     comp->chain = 0;
     drive->chain = 1;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_6, comp, drive, inter);
     //out_6 Timer End
@@ -489,6 +516,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - compressor->overdrive at double compression and drive
     comp->chain = 1;
     drive->chain = 2;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_7, comp, drive, inter);
     //out_7 Timer End
@@ -501,6 +532,10 @@ int process (jack_nframes_t nframes, void *arg){
     //Params - overdrive->compressor at double compression and drive
     comp->chain = 2;
     drive->chain = 1;
+    comp->gs[0] = gs[0];
+    comp->gs[1] = gs[1];
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Effect
     effects_chain(in, out_8, comp, drive, inter);
     //out_8 Timer End
@@ -512,6 +547,15 @@ int process (jack_nframes_t nframes, void *arg){
     overall_end = clock();
     //Overall Timer Calculations
     timer_calcs(timer.overall, overall_begin, overall_end);
+    
+    //Peak Count
+    drive->peak_count++;
+    //Buffer Count
+    drive->buffer_count++;
+    //Once window is filled, start overwriting
+    if (drive->buffer_count == drive->peak_window){
+        drive->buffer_count = 0;
+    }
     return 0;
 }
 
@@ -647,7 +691,7 @@ int main (int argc, char *argv[]){
         fprintf(stderr, "[JACK-ERROR] No physical playback ports\n");
         exit (1);
     }
-    if (jack_connect (client, jack_port_name (output_port_8), ports[0])) {
+    if (jack_connect (client, jack_port_name (output_port_1), ports[0])) {
         fprintf (stderr, "[JACK-WARNING] Cannot connect output port - it has to be done manually\n");
     }
     free (ports);

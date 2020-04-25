@@ -39,7 +39,7 @@ static inline void print_about(){
            "Raspberry Ripple - A Programmable Bass Guitar Effects Pedal\n"
            "(c) Copyright 2020, Andy Silk (@silkyandrew97)\n"
            "MIT License\n"
-           "Project Home: https://github.com/...\n"
+           "Project Home: https://github.com/silkyandrew97/raspberry_ripple\n"
            "\n");
 }
 
@@ -71,8 +71,6 @@ static inline void print_help(){
 
 static inline void INThandler(int sig){
     signal(sig, SIG_IGN);
-    //Clean
-    overdrive_free(drive);
     //Close Client
     printf("\n");
     jack_client_close (client);
@@ -214,7 +212,7 @@ static inline void effects_chain(jack_default_audio_sample_t *in, jack_default_a
             exit(1);
         }
         if (drive->chain == 2){
-            overdrive(in, out, drive, inter);
+            overdrive(out, out, drive, inter);
         }
     }
     else if (drive->chain == 1){
@@ -256,6 +254,10 @@ int process (jack_nframes_t nframes, void *arg){
     out_5 = jack_port_get_buffer (output_port_5, nframes);
     out_6 = jack_port_get_buffer (output_port_6, nframes);
     
+    //Control Params
+    float peak = drive->peak;
+    float peak_count = drive->peak_count;
+    
     //Global Params
     comp->chain = 0;
     drive->chain = 1;
@@ -264,6 +266,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.0
     drive->drive = 0.0f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Dependants
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -284,6 +288,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.2
     drive->drive = 0.2f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Coefficients
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -304,6 +310,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.4
     drive->drive = 0.4f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Coefficients
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -324,6 +332,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
    //Params - Overdrive = 0.6
     drive->drive = 0.6f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Coefficients
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -344,6 +354,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 0.8
     drive->drive = 0.8f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Coefficients
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -364,6 +376,8 @@ int process (jack_nframes_t nframes, void *arg){
     begin = clock();
     //Params - Overdrive = 1.0
     drive->drive = 1.0f;
+    drive->peak = peak;
+    drive->peak_count = peak_count;
     //Adjust Coefficients
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
@@ -384,6 +398,15 @@ int process (jack_nframes_t nframes, void *arg){
     overall_end = clock();
     //Overall Timer Calculations
     timer_calcs(timer.overall, overall_begin, overall_end);
+    
+    //Peak Count
+    drive->peak_count++;
+    //Buffer Count
+    drive->buffer_count++;
+    //Once window is filled, start overwriting
+    if (drive->buffer_count == drive->peak_window){
+        drive->buffer_count = 0;
+    }
     return 0;
 }
 

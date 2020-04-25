@@ -85,8 +85,6 @@ static inline void print_help(){
 
 static inline void INThandler(int sig){
     signal(sig, SIG_IGN);
-    //Clean
-    overdrive_free(drive);
     //Close Client
     printf("\n");
     jack_client_close (client);
@@ -392,6 +390,14 @@ int process (jack_nframes_t nframes, void *arg){
         fprintf(stderr, "[ERROR] in main process\n");
         exit(1);
     }
+    //Peak Count
+    drive->peak_count++;
+    //Buffer Count
+    drive->buffer_count++;
+    //Once window is filled, start overwriting
+    if (drive->buffer_count == drive->peak_window){
+        drive->buffer_count = 0;
+    }
     return 0;
 }
 
@@ -489,10 +495,10 @@ int main (int argc, char *argv[]){
     
     //Parameter Warnings
     if (inter->nperiods != 3){
-        printf("[USER-WARNING] 3 periods recommended for USB Audio Interface\n");
+        printf("[USER-WARNING] 3 period buffer recommended for USB Audio Interface\n");
     }
     if (!(inter->fs == 48000) || inter->fs == 44100){
-        printf("[USER-WARNING] Check sampling rate is compatible with USB Audio Interface\n");
+        printf("[USER-WARNING] Check sample rate is compatible with USB Audio Interface\n");
     }
     float latency = inter->nframes * inter->nperiods / inter->fs;
     if (latency > 0.006f){

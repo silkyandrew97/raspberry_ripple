@@ -46,10 +46,11 @@ void compressor_init(compressor_parameters *comp, interface_parameters *inter){
 }
 
 int compressor(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out, compressor_parameters *comp, interface_parameters *inter){
-    float db, sc, gc, lin;
+    float abs, db, sc, gc, lin;
     for (uint32_t i = 0; i < inter->nframes; i++){
         //Apply Anomaly  Detection
-        if (fabsf(in[i]) == 0.0f || isnan(fabsf(in[i])) || isinf(fabsf(in[i]))){
+        abs = fabsf(in[i]);
+        if ((abs == 0.0f) || (isnan(abs)) || (isinf(abs))){
             out[i] = 0.0f;
             gc = 0.0f;
             //Maintain gs continuity when anomaly detected
@@ -68,7 +69,7 @@ int compressor(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out
         //If No Anomalies Detected
         else{
             //Convert Input Signal to dB
-            db = lin2db(fabsf(in[i]));
+            db = lin2db(abs);
             //Gain Computer
             if (db < (comp->threshold - 0.5f * comp->knee_width)){
                 sc = db;

@@ -31,7 +31,4 @@ int overdrive_init(overdrive_parameters *drive, interface_parameters *inter);
 //Overdrive Effect
 int overdrive(jack_default_audio_sample_t *in, jack_default_audio_sample_t *out, overdrive_parameters *drive, interface_parameters *inter);
 
-//Free Allocated Memory
-void overdrive_free(overdrive_parameters *drive);
-
 #endif
