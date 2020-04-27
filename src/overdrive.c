@@ -13,19 +13,19 @@ static inline float db2lin(float db){
 }
 
 static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_parameters *drive, interface_parameters *inter, float prev_peak, float *local_store){
-    //Calculate peak from current block
+    //Calculate peak from current period
     float local_peak = 0.0f;
     float abs;
     uint32_t i;
     for (i = 0; i < inter->nframes; i++){
         abs = fabsf(in[i]);
-        if(abs>local_peak){
+        if (abs > local_peak){
             local_peak = abs;
         }
     }
-    //Assign block peak to window_store
+    //Assign period peak to window_store
     drive->window_store[drive->buffer_count] = local_peak;
-    //If current block peak is larger than what is stored in the window
+    //If current period peak is larger than what is stored in the window
     if (local_peak > drive->peak){
         //Assign new peak value
         drive->peak = local_peak;
@@ -51,9 +51,9 @@ static inline void peak_calcs(jack_default_audio_sample_t *in, overdrive_paramet
     }
     //If largest peak lost from window
     else if (drive->peak_count == drive->peak_window){
+        //Calucate new window peak
         drive->peak = local_peak;
         uint32_t high = drive->buffer_count;
-        //Calucate new window peak
         for (i = drive->buffer_count + 1; i < drive->peak_window; i++){
             if (drive->window_store[i] >= drive->peak){
                 drive->peak = drive->window_store[i];
@@ -109,7 +109,7 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
                 if (norm > 0.0f){
                     out[i] = local_store[i] * (3.0f - powf((2.0f - norm * 3.0f), 2.0f)) / 3.0f;
                 }
-                if (norm < 0.0f){
+                else{
                     out[i] = local_store[i] * (-(3.0f - powf((2.0f - (abs * 3.0f)), 2.0f)) / 3.0f);
                 }
             }
@@ -117,7 +117,7 @@ static inline int effect(jack_default_audio_sample_t *in, jack_default_audio_sam
                 if (norm > 0.0f){
                     out[i] = local_store[i];
                 }
-                if (norm < 0.0f){
+                else{
                     out[i] = -local_store[i];
                 }
             }
@@ -151,13 +151,13 @@ int overdrive_init(overdrive_parameters *drive, interface_parameters *inter){
     drive->gain = db2lin(drive->gain_db);
     drive->drive_coeff = 1.0f + (2.0f * powf((1.0f - drive->drive), 2.5f));
     drive->inv_drive_coeff = 1.0f / drive->drive_coeff;
-    if (drive->inv_drive_coeff < 2 * THRESHOLD){
+    if (drive->inv_drive_coeff < (2 * THRESHOLD)){
         drive->norm_factor = drive->drive_coeff * (3.0f - powf((2.0f - drive->inv_drive_coeff * 3.0f), 2.0f)) / 3.0f;
     }
     else{
         drive->norm_factor = drive->drive_coeff;
     }
-    /*...Sliding Window Calculations...*/
+    //Sliding Window Calculations
     //Calculate sliding window size rounded up to nearest block multiple
     uint32_t window_n = (uint32_t)(floorf(drive->window_t * (float)inter->fs));
     uint32_t remainder = window_n % inter->nframes;
