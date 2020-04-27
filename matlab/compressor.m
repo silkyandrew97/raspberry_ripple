@@ -1,3 +1,7 @@
+%Copyright (C) 2020, Andy Silk (@silkyandrew97)
+%MIT License
+%Project Home: https://github.com/silkyandrew97/raspberry_ripple
+
 %Read Test File
 [in,FS] = audioread('unaltered_signal.wav', 'native');
 LENGTH = length(in);
